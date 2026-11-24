@@ -1,0 +1,4 @@
+[Device]
+baud=9600
+parity=none
+stopbits=1

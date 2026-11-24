@@ -1,0 +1,47 @@
+# Python bytecode and caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Application logs
+*.log
+smart_organizer.log
+logs/
+
+# Operation manifests (contain local filesystem paths)
+.smart_organizer_manifest.json
+*_manifest.json
+
+# Local application state & IDE metadata
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Temporary test files and folders
+tmp*/
+*.tmp
+*.temp
+.temp_test/
+*_backup.py
+*.bak

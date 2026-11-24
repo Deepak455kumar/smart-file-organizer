@@ -1,0 +1,3 @@
+Team sync notes:
+- Review sprint backlog
+- Plan deployment
