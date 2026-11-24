@@ -183,11 +183,14 @@ The v1.1.0 desktop interface features a modern dark navy dashboard inspired by c
 
 ## Application Screenshots
 
-> *Add your high-resolution desktop captures here before showcasing on GitHub.*
+### Main Application Dashboard
+![Smart File Organizer Dashboard](docs/screenshots/dashboard.png)
 
-| Main Organizer Dashboard | History & Safety Settings |
-| :---: | :---: |
-| ![Smart File Organizer Dashboard](docs/screenshots/dashboard.png) | ![History & Settings View](docs/screenshots/settings.png) |
+### Before Organization
+![Files Before Organization](docs/screenshots/before.png)
+
+### After Organization
+![Files After Organization](docs/screenshots/after.png)
 
 ---
 
