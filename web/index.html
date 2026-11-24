@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart File Organizer Web Edition v1.2.0</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">
+          <svg width="46" height="38" viewBox="0 0 46 38" fill="none">
+            <path d="M4 12C4 9.79086 5.79086 8 8 8H18L23 13H38C40.2091 13 42 14.7909 42 17V30C42 32.2091 40.2091 34 38 34H8C5.79086 34 4 32.2091 4 30V12Z" fill="#0284C7"/>
+            <path d="M2 17C2 14.7909 3.79086 13 6 13H40C42.2091 13 44 14.7909 44 17V31C44 33.2091 42.2091 35 40 35H6C3.79086 35 2 33.2091 2 31V17Z" fill="#38BDF8"/>
+          </svg>
+        </div>
+        <h1 class="brand-title">Smart File Organizer</h1>
+        <span class="badge-version">Web v1.2.0</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" data-tab="organizer">
+          <span class="nav-icon">🏠</span> Organizer
+        </button>
+        <button class="nav-btn" data-tab="rules">
+          <span class="nav-icon">⚙️</span> Rules & Categories
+        </button>
+        <button class="nav-btn" data-tab="about">
+          <span class="nav-icon">ℹ️</span> About & Security
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="footer-graphic">
+          <div class="glow-folder">
+            <div class="paper-sheet"></div>
+            <div class="folder-front"></div>
+          </div>
+        </div>
+        <p class="footer-tagline">Keep Your Files<br>Organized</p>
+        <div class="footer-accent-line"></div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Organizer View -->
+      <section id="view-organizer" class="content-view active">
+        <!-- Dashboard Header -->
+        <header class="dashboard-header">
+          <div class="header-icon">
+            <svg width="40" height="34" viewBox="0 0 44 36" fill="none">
+              <path d="M4 8C4 5.79086 5.79086 4 8 4H18L22 9H36C38.2091 9 40 10.7909 40 13V28C40 30.2091 38.2091 32 36 32H8C5.79086 32 4 30.2091 4 28V8Z" fill="#0284C7"/>
+              <path d="M2 13C2 10.7909 3.79086 9 6 9H38C40.2091 9 42 10.7909 42 13V29C42 31.2091 40.2091 33 38 33H6C3.79086 33 2 31.2091 2 29V13Z" fill="#38BDF8"/>
+            </svg>
+          </div>
+          <div class="header-titles">
+            <h2>Smart File Organizer <span class="edition-tag">Web Edition</span></h2>
+            <p>Automatically preview, categorize, and package loose files into safe organized ZIP archives directly in your browser.</p>
+          </div>
+        </header>
+
+        <!-- Section 1: File & Folder Selection -->
+        <div class="section-title">
+          <span class="step-badge">1</span>
+          <h3>Select Files or Folder</h3>
+        </div>
+
+        <div class="card card-dropzone" id="dropzone">
+          <input type="file" id="file-input-multiple" multiple style="display: none;" />
+          <input type="file" id="file-input-directory" webkitdirectory directory multiple style="display: none;" />
+          
+          <div class="dropzone-content">
+            <div class="dropzone-icon">📂</div>
+            <div class="dropzone-text">
+              <p class="dropzone-primary">Drag & drop files or folders here, or click to browse</p>
+              <p class="dropzone-secondary" id="selected-path-display">No files selected. All processing runs 100% locally in your browser.</p>
+            </div>
+            <div class="dropzone-actions">
+              <button class="btn btn-primary" id="btn-browse-files">Select Files</button>
+              <button class="btn btn-secondary" id="btn-browse-folder">Select Folder</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Four Statistics Cards -->
+        <div class="stats-grid">
+          <div class="stat-card card-blue">
+            <div class="stat-icon stat-icon-blue">📄</div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-total-files">0</span>
+              <span class="stat-label">Total Files</span>
+            </div>
+          </div>
+          <div class="stat-card card-purple">
+            <div class="stat-icon stat-icon-purple">📚</div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-categories">0</span>
+              <span class="stat-label">Categories Detected</span>
+            </div>
+          </div>
+          <div class="stat-card card-teal">
+            <div class="stat-icon stat-icon-teal">💾</div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-total-size">0 B</span>
+              <span class="stat-label">Total Size</span>
+            </div>
+          </div>
+          <div class="stat-card card-amber">
+            <div class="stat-icon stat-icon-amber">✔</div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-ready-files">0</span>
+              <span class="stat-label">Ready to Organize</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons Bar -->
+        <div class="actions-bar">
+          <button class="btn btn-action-blue" id="btn-scan" disabled>
+            <span class="btn-icon">🔍</span> Scan & Preview
+          </button>
+          <button class="btn btn-action-green" id="btn-organize" disabled>
+            <span class="btn-icon">▷</span> Organize & Download ZIP
+          </button>
+          <button class="btn btn-action-purple" id="btn-reset" disabled>
+            <span class="btn-icon">↺</span> Reset / Clear
+          </button>
+        </div>
+
+        <!-- Section 2: Proposed Organization Preview -->
+        <div class="section-title preview-header">
+          <div class="preview-title-group">
+            <span class="step-badge">2</span>
+            <h3>Proposed Organization Preview</h3>
+          </div>
+          <span class="preview-counter" id="table-summary-counter">Total: 0 files | Categories: 0</span>
+        </div>
+
+        <!-- Preview Table Card -->
+        <div class="card card-table">
+          <div class="table-container">
+            <table class="preview-table" id="preview-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">#</th>
+                  <th>Original File Name</th>
+                  <th style="width: 140px;">Category</th>
+                  <th>Destination Path</th>
+                  <th style="width: 90px; text-align: right;">Size</th>
+                  <th style="width: 110px; text-align: center;">Status</th>
+                </tr>
+              </thead>
+              <tbody id="preview-tbody">
+                <tr class="empty-row">
+                  <td colspan="6">No files scanned yet. Drag files into the box above or click "Select Files".</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Bottom Notification Pill Banner -->
+        <div class="notification-banner banner-info" id="status-banner">
+          <span class="banner-icon" id="banner-icon">ℹ</span>
+          <span class="banner-text" id="banner-text">Ready. Select files or a folder to preview safe categorization.</span>
+        </div>
+      </section>
+
+      <!-- Rules & Categories View -->
+      <section id="view-rules" class="content-view">
+        <header class="view-header">
+          <h2>⚙️ Category Definitions & Rules</h2>
+          <p>Files are matched against extensions case-insensitively using standard Smart File Organizer rules.</p>
+        </header>
+        <div class="card rules-card">
+          <table class="rules-table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Extensions</th>
+              </tr>
+            </thead>
+            <tbody id="rules-tbody">
+              <!-- Dynamically populated from JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- About & Security View -->
+      <section id="view-about" class="content-view">
+        <header class="view-header">
+          <h2>ℹ️ About Smart File Organizer Web Edition</h2>
+          <p>A zero-install, client-side web application for organizing cluttered directories without privacy leaks.</p>
+        </header>
+        <div class="card about-card">
+          <h3>🔐 Privacy & Security</h3>
+          <p>Unlike cloud converter services, Smart File Organizer Web Edition performs <strong>100% client-side categorization and archiving</strong>. Your files are never uploaded to any remote server or third party.</p>
+          
+          <h3 style="margin-top: 1.5rem;">⚡ Features</h3>
+          <ul>
+            <li>Drag & drop file or folder batch loading.</li>
+            <li>Real-time extension inspection and category mapping.</li>
+            <li>Automatic duplicate collision handling (<span class="code-span">report_1.pdf</span>).</li>
+            <li>Bundled client-side ZIP packaging with manifest metadata.</li>
+            <li>Completely portable: run locally or deploy to static hosts like Vercel.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="zip-builder.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
