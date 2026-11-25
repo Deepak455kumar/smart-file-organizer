@@ -35,6 +35,21 @@ class SimpleZipBuilder {
    * @param {Uint8Array|ArrayBuffer|string} content - Raw content
    */
   addFile(path, content) {
+    // Reject unsafe extraction paths instead of silently rewriting them.
+    const normalizedPath = typeof path === "string" ? path.replace(/\\/g, "/") : "";
+    if (!normalizedPath || /[\x00-\x1F:]/.test(normalizedPath) ||
+        normalizedPath.split("/").some(part => !part || part === "." || part === "..")) {
+      throw new Error("Unsafe ZIP entry path: " + path);
+    }
+    if (new TextEncoder().encode(normalizedPath).length > 0xFFFF) {
+      throw new Error("ZIP entry path is too long: " + path);
+    }
+    if (this.files.some(file => file.path.toLowerCase() === normalizedPath.toLowerCase())) {
+      throw new Error("Duplicate ZIP entry path: " + path);
+    }
+    if (this.files.length >= 0xFFFF) {
+      throw new Error("Too many ZIP entries; ZIP64 is not supported.");
+    }
     let data;
     if (typeof content === "string") {
       data = new TextEncoder().encode(content);
@@ -46,8 +61,9 @@ class SimpleZipBuilder {
       throw new Error("Unsupported content type for file: " + path);
     }
 
-    // Normalize path separators to forward slash
-    const normalizedPath = path.replace(/\\/g, "/").replace(/^\/+/, "");
+    if (data.length >= 0xFFFFFFFF) {
+      throw new Error("File exceeds classic ZIP size limits; ZIP64 is not supported.");
+    }
     this.files.push({
       path: normalizedPath,
       data: data,
@@ -59,6 +75,11 @@ class SimpleZipBuilder {
    * @returns {Uint8Array}
    */
   generate() {
+    const archiveSize = this.files.reduce((size, file) =>
+      size + 76 + 2 * new TextEncoder().encode(file.path).length + file.data.length, 22);
+    if (archiveSize >= 0xFFFFFFFF) {
+      throw new Error("Archive exceeds classic ZIP size limits; select fewer or smaller files.");
+    }
     const entries = [];
     let offset = 0;
     const parts = [];

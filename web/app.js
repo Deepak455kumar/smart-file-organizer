@@ -119,16 +119,20 @@ btnBrowseFolder.addEventListener("click", (e) => {
   fileInputDirectory.click();
 });
 
-dropzone.addEventListener("click", () => {
+dropzone.addEventListener("click", (e) => {
+  // Programmatic input clicks bubble too; never open a second picker for them.
+  if (e.target === fileInputMultiple || e.target === fileInputDirectory) return;
   fileInputMultiple.click();
 });
 
 fileInputMultiple.addEventListener("change", (e) => {
   handleFilesSelected(e.target.files);
+  e.target.value = ""; // Allow selecting the same files again; state keeps the File objects.
 });
 
 fileInputDirectory.addEventListener("change", (e) => {
   handleFilesSelected(e.target.files);
+  e.target.value = "";
 });
 
 // Drag and drop
@@ -173,13 +177,13 @@ function runPreview() {
     let destPath = `${category}/${finalName}`;
 
     let counter = 1;
-    while (reservedDestinations.has(destPath)) {
+    while (reservedDestinations.has(destPath.toLowerCase())) {
       finalName = `${stem}_${counter}${suffix}`;
       destPath = `${category}/${finalName}`;
       isDuplicate = true;
       counter++;
     }
-    reservedDestinations.add(destPath);
+    reservedDestinations.add(destPath.toLowerCase());
 
     state.previewItems.push({
       file: file,
@@ -294,6 +298,11 @@ async function handleOrganizeAndDownload() {
   setBanner(`Packaging ${total} file(s) into categorized ZIP archive...`, "info");
 
   try {
+    // This writer uses classic ZIP, without ZIP64. Reject before reading large files.
+    if (total + 1 > 0xFFFF || state.previewItems.some(i => i.size >= 0xFFFFFFFF) ||
+        state.previewItems.reduce((sum, i) => sum + i.size, 0) >= 0xFFFFFFFF) {
+      throw new Error("Selection exceeds classic ZIP limits (under 4 GiB and at most 65,534 files). Select fewer or smaller files.");
+    }
     const zip = new SimpleZipBuilder();
     const manifestItems = [];
 
